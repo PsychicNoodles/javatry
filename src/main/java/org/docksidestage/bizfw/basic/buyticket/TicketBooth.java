@@ -58,7 +58,7 @@ public class TicketBooth {
         } else {
             throw new ArithmeticException("???");
         }
-        return new TicketBuyResult(new MultiDayTicket(price, days), handedMoney % price);
+        return new TicketBuyResult(new MultiDayTicket(price, days), handedMoney - price);
     }
 
     private int processPassport(int handedMoney, PassportVariants variant) {

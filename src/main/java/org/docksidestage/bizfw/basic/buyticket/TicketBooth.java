@@ -61,11 +61,21 @@ public class TicketBooth {
         return new TicketBuyResult(new MultiDayTicket(price, days), handedMoney - price);
     }
 
-    // TODO Long Method になっているので意味のある単位でfunctionに切り出してみよう by もってぃ
     private int processPassport(int handedMoney, PassportVariants variant) {
+        checkQuantity();
+        int days = checkHandedMoney(handedMoney, variant);
+        subtractQuantity();
+        addProceeds(handedMoney);
+        return days;
+    }
+
+    private void checkQuantity() throws TicketSoldOutException {
         if (quantity <= 0) {
             throw new TicketSoldOutException("Sold out");
         }
+    }
+
+    private int checkHandedMoney(int handedMoney, PassportVariants variant) {
         int days;
         if (variant == PassportVariants.MULTI_DAY) {
             if (handedMoney >= FOUR_DAY_PRICE) {
@@ -82,13 +92,19 @@ public class TicketBooth {
                 throw new TicketShortMoneyException("Short money for single day: " + handedMoney);
             }
         }
-        quantity--;
+        return days;
+    }
+
+    private void subtractQuantity() {
+        --quantity;
+    }
+
+    private void addProceeds(int handedMoney) {
         if (salesProceeds != null) {
             salesProceeds += handedMoney;
         } else {
             salesProceeds = handedMoney;
         }
-        return days;
     }
 
     private enum PassportVariants {

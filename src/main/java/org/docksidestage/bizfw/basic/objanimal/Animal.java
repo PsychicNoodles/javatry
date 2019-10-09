@@ -16,6 +16,7 @@
 package org.docksidestage.bizfw.basic.objanimal;
 
 import org.docksidestage.bizfw.basic.objanimal.loud.Loudable;
+import org.docksidestage.bizfw.basic.objanimal.named.Nameable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,61 +24,31 @@ import org.slf4j.LoggerFactory;
  * The object for animal(動物).
  * @author jflute
  */
-public abstract class Animal implements Loudable {
-
-    // ===================================================================================
-    //                                                                          Definition
-    //                                                                          ==========
-    private static final Logger logger = LoggerFactory.getLogger(Animal.class);
-
+public abstract class Animal extends BarkingProcess implements Loudable, Nameable {
     // ===================================================================================
     //                                                                           Attribute
     //                                                                           =========
     protected int hitPoint;
 
+    protected String name;
+
     // ===================================================================================
     //                                                                         Constructor
     //                                                                         ===========
     public Animal() {
-        hitPoint = getInitialHitPoint();
+        this(null);
     }
+
+    public Animal(String name) { this.name = name; hitPoint = getInitialHitPoint(); }
 
     protected int getInitialHitPoint() {
         return 10; // as default
     }
 
     // ===================================================================================
-    //                                                                               Bark
-    //                                                                              ======
-    public BarkedSound bark() {
-        breatheIn();
-        prepareAbdominalMuscle();
-        String barkWord = getBarkWord();
-        BarkedSound barkedSound = doBark(barkWord);
-        return barkedSound;
-    }
-
-    protected void prepareAbdominalMuscle() {
-        logger.debug("...Using my abdominal muscle"); // dummy implementation
-        downHitPoint();
-    }
-
-    protected void breatheIn() {
-        logger.debug("...Breathing in"); // dummy implementation
-        downHitPoint();
-    }
-
-    protected abstract String getBarkWord();
-
-    protected BarkedSound doBark(String barkWord) {
-        downHitPoint();
-        return new BarkedSound(barkWord);
-    }
-
-    // ===================================================================================
     //                                                                           Hit Point
     //                                                                           =========
-    protected void downHitPoint() {
+    public void downHitPoint() {
         --hitPoint;
         if (hitPoint == 0) {
             throw new IllegalStateException("I'm very tired, so I want to sleep" + getBarkWord());
@@ -97,5 +68,10 @@ public abstract class Animal implements Loudable {
     //                                                                            ========
     public int getHitPoint() {
         return hitPoint;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

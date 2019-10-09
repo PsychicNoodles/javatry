@@ -32,6 +32,8 @@ public class Zombie extends Animal {
     public Zombie() {
     }
 
+    public Zombie(String name) { super(name); }
+
     @Override
     protected int getInitialHitPoint() {
         return -1; // magic number for infinity hit point
@@ -68,7 +70,7 @@ public class Zombie extends Animal {
     //                                                                           Hit Point
     //                                                                           =========
     @Override
-    protected void downHitPoint() {
+    public void downHitPoint() {
         // do nothing, infinity hit point
     }
 

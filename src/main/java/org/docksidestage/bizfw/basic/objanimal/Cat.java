@@ -36,6 +36,8 @@ public class Cat extends Animal implements FastRunner {
     public Cat() {
     }
 
+    public Cat(String name) { super(name) ;}
+
     // ===================================================================================
     //                                                                               Bark
     //                                                                              ======
@@ -57,7 +59,7 @@ public class Cat extends Animal implements FastRunner {
     //                                                                           Hit Point
     //                                                                           =========
     @Override
-    protected void downHitPoint() {
+    public void downHitPoint() {
         super.downHitPoint();
         if (hitPoint % 2 == 0) {
             super.downHitPoint();

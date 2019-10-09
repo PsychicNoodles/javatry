@@ -15,8 +15,7 @@
  */
 package org.docksidestage.javatry.basic;
 
-import org.docksidestage.bizfw.basic.buyticket.Ticket;
-import org.docksidestage.bizfw.basic.buyticket.TicketBooth;
+import org.docksidestage.bizfw.basic.buyticket.*;
 import org.docksidestage.bizfw.basic.objanimal.Animal;
 import org.docksidestage.bizfw.basic.objanimal.BarkedSound;
 import org.docksidestage.bizfw.basic.objanimal.Cat;
@@ -70,7 +69,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         //
         // [ticket info]
         //
-        int displayPrice = quantity;
+        int displayPrice = oneDayPrice;
         boolean alreadyIn = false;
 
         // other processes here...
@@ -88,14 +87,14 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         //
         // [final process]
         //
-        saveBuyingHistory(quantity, displayPrice, salesProceeds, alreadyIn);
+        saveBuyingHistory(quantity, salesProceeds, displayPrice, alreadyIn);
     }
 
     private void saveBuyingHistory(int quantity, Integer salesProceeds, int displayPrice, boolean alreadyIn) {
         if (alreadyIn) {
             // only logging here (normally e.g. DB insert)
-            showTicketBooth(displayPrice, salesProceeds);
-            showYourTicket(quantity, alreadyIn);
+            showTicketBooth(quantity, salesProceeds);
+            showYourTicket(displayPrice, alreadyIn);
         }
     }
 
@@ -131,9 +130,8 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
         // #fixme you if step05 has been finished, you can use this code by jflute (2019/06/15)
         // _/_/_/_/_/_/_/_/_/_/
-        //Ticket ticket = booth.buyOneDayPassport(10000);
-        booth.buyOneDayPassport(10000); // as temporary, remove if you finished steo05
-        Ticket ticket = new Ticket(7400); // also here
+        TicketBuyResult result = booth.buyOneDayPassport(10000);
+        Ticket ticket = result.getTicket();
 
         // *buyOneDayPassport() has this process:
         //if (quantity <= 0) {
@@ -171,7 +169,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     }
 
     private void saveBuyingHistory(TicketBooth booth, Ticket ticket) {
-        if (ticket.isAlreadyIn()) {
+        if (ticket.isAtLimit()) {
             // only logging here (normally e.g. DB insert)
             doShowTicketBooth(booth);
             doShowYourTicket(ticket);
@@ -183,7 +181,7 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     }
 
     private void doShowYourTicket(Ticket ticket) {
-        log("Your Ticket: displayPrice={}, alreadyIn={}", ticket.getDisplayPrice(), ticket.isAlreadyIn());
+        log("Your Ticket: displayPrice={}, isAtLimit={}", ticket.getDisplayPrice(), ticket.isAtLimit());
     }
 
     // ===================================================================================
@@ -197,9 +195,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Dog dog = new Dog();
         BarkedSound sound = dog.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = dog.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -207,9 +205,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Animal animal = new Dog();
         BarkedSound sound = animal.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = animal.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -217,9 +215,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Animal animal = createAnyAnimal();
         BarkedSound sound = animal.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = animal.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     private Animal createAnyAnimal() {
@@ -235,9 +233,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     private void doAnimalSeaLand_for_4th(Animal animal) {
         BarkedSound sound = animal.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = animal.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -245,9 +243,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Animal animal = new Cat();
         BarkedSound sound = animal.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = animal.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -255,9 +253,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Animal animal = new Zombie();
         BarkedSound sound = animal.bark();
         String sea = sound.getBarkWord();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         int land = animal.getHitPoint();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     // ===================================================================================
@@ -267,18 +265,18 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
     public void test_objectOriented_polymorphism_interface_dispatch() {
         Loudable loudable = new Zombie();
         String sea = loudable.soundLoudly();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         String land = ((Zombie) loudable).bark().getBarkWord();
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
     public void test_objectOriented_polymorphism_interface_hierarchy() {
         Loudable loudable = new AlarmClock();
         String sea = loudable.soundLoudly();
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         boolean land = loudable instanceof Animal;
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /** Same as the previous method question. (前のメソッドの質問と同じ) */
@@ -286,9 +284,9 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         Animal seaAnimal = new Cat();
         Animal landAnimal = new Zombie();
         boolean sea = seaAnimal instanceof FastRunner;
-        log(sea); // your answer? => 
+        log(sea); // your answer? =>
         boolean land = landAnimal instanceof FastRunner;
-        log(land); // your answer? => 
+        log(land); // your answer? =>
     }
 
     /**

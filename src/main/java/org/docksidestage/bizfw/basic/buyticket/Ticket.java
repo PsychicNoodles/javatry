@@ -5,5 +5,7 @@ public interface Ticket {
     void doInPark();
     int getDisplayPrice();
     int getDayLimit();
+    boolean isOneDayPassport();
+    boolean isAtLimit();
 
 }

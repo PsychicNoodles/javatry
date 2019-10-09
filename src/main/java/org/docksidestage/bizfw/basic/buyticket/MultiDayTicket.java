@@ -38,7 +38,7 @@ public class MultiDayTicket implements Ticket {
     //                                                                             In Park
     //                                                                             =======
     public void doInPark() {
-        if (currentDays >= dayLimit) {
+        if (isAtLimit()) {
             throw new IllegalStateException("Already in park by this ticket: displayedPrice=" + displayPrice);
         }
         currentDays++;
@@ -57,5 +57,13 @@ public class MultiDayTicket implements Ticket {
 
     public int getCurrentDays() {
         return currentDays;
+    }
+
+    public boolean isAtLimit() {
+        return dayLimit >= currentDays;
+    }
+
+    public boolean isOneDayPassport() {
+        return false;
     }
 }

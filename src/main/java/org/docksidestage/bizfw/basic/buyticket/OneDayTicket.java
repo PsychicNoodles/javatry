@@ -55,4 +55,8 @@ public class OneDayTicket implements Ticket {
     }
 
     public int getDayLimit() { return 1; }
+
+    public boolean isOneDayPassport() { return true; }
+
+    public boolean isAtLimit() { return isAlreadyIn(); }
 }

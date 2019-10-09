@@ -61,6 +61,7 @@ public class TicketBooth {
         return new TicketBuyResult(new MultiDayTicket(price, days), handedMoney - price);
     }
 
+    // TODO Long Method になっているので意味のある単位でfunctionに切り出してみよう by もってぃ
     private int processPassport(int handedMoney, PassportVariants variant) {
         if (quantity <= 0) {
             throw new TicketSoldOutException("Sold out");

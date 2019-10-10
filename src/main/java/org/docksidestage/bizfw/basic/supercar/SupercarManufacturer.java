@@ -16,6 +16,7 @@
 package org.docksidestage.bizfw.basic.supercar;
 
 import org.docksidestage.bizfw.basic.supercar.SupercarSteeringWheelManufacturer.SteeringWheel;
+import org.docksidestage.bizfw.basic.supercar.SupercarSteeringWheelManufacturer.SupercarSteeringWheelCannotMakeByIdException;
 
 /**
  * The manufacturer(製造業者) of supercar.
@@ -29,7 +30,12 @@ public class SupercarManufacturer {
         Integer steeringWheelId = catalog.findSteeringWheelSpecId(catalogKey);
 
         SupercarSteeringWheelManufacturer manufacturer = createSupercarSteeringWheelManufacturer();
-        SteeringWheel steeringWheel = manufacturer.makeSteeringWheel(steeringWheelId);
+        SteeringWheel steeringWheel;
+        try {
+            steeringWheel = manufacturer.makeSteeringWheel(steeringWheelId);
+        } catch (SupercarSteeringWheelCannotMakeByIdException e) {
+            throw new SupercarManufacturerManufacturingException(catalogKey, e);
+        }
 
         return new Supercar(steeringWheel);
     }
@@ -42,6 +48,12 @@ public class SupercarManufacturer {
 
         public Supercar(SteeringWheel steeringWheel) {
             // dummy
+        }
+    }
+
+    public static class SupercarManufacturerManufacturingException extends RuntimeException {
+        public SupercarManufacturerManufacturingException(String key, Throwable cause) {
+            super("Could not manufacture supercar with key " + key, cause);
         }
     }
 }

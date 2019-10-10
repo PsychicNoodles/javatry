@@ -16,6 +16,7 @@
 package org.docksidestage.bizfw.basic.supercar;
 
 import org.docksidestage.bizfw.basic.supercar.SupercarManufacturer.Supercar;
+import org.docksidestage.bizfw.basic.supercar.SupercarManufacturer.SupercarManufacturerManufacturingException;
 
 /**
  * The dealer(販売業者) of supercar.
@@ -25,18 +26,28 @@ public class SupercarDealer {
 
     public Supercar orderSupercar(String clientRequirement) {
         SupercarManufacturer manufacturer = createSupercarManufacturer();
-        if (clientRequirement.contains("steering wheel is like sea")) {
-            return manufacturer.makeSupercar("piari");
-        } else if (clientRequirement.contains("steering wheel is useful on land")) {
-            return manufacturer.makeSupercar("land");
-        } else if (clientRequirement.contains("steering wheel has many shop")) {
-            return manufacturer.makeSupercar("piari");
-        } else {
-            throw new IllegalStateException("Cannot understand the client requirement: " + clientRequirement);
+        try {
+            if (clientRequirement.contains("steering wheel is like sea")) {
+                return manufacturer.makeSupercar("piari");
+            } else if (clientRequirement.contains("steering wheel is useful on land")) {
+                return manufacturer.makeSupercar("land");
+            } else if (clientRequirement.contains("steering wheel has many shop")) {
+                return manufacturer.makeSupercar("piari");
+            } else {
+                throw new IllegalStateException("Cannot understand the client requirement: " + clientRequirement);
+            }
+        } catch (SupercarManufacturerManufacturingException e) {
+            throw new SupercarDealerDealingException(clientRequirement, e);
         }
     }
 
     protected SupercarManufacturer createSupercarManufacturer() {
         return new SupercarManufacturer();
+    }
+
+    public static class SupercarDealerDealingException extends RuntimeException {
+        public SupercarDealerDealingException(String clientRequirement, Throwable cause) {
+            super("Could not deal car with client requirement " + clientRequirement, cause);
+        }
     }
 }

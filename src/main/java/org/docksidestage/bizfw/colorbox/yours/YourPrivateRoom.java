@@ -506,4 +506,11 @@ public class YourPrivateRoom {
                 .map(YourPrivateRoom::toDecimalType)
                 .filter(Objects::nonNull);
     }
+
+    public static Stream<LocalDateTime> extractLocalDateTimes() {
+        return getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof LocalDate || obj instanceof LocalDateTime)
+                .map(obj -> obj instanceof LocalDate ? LocalDateTime.of((LocalDate) obj, LocalTime.now()) : (LocalDateTime) obj);
+    }
 }

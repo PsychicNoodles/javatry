@@ -15,6 +15,18 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.*;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
+import java.util.Set;
+
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -33,6 +45,11 @@ public class Step14DateTest extends PlainTestCase {
      * (カラーボックスに入っている日付をスラッシュ区切り (e.g. 2019/04/24) のフォーマットしたら？)
      */
     public void test_formatDate() {
+        String str = extractLocalDateTimes()
+                .map(localDateTime -> localDateTime.format(DateTimeFormatter.ofPattern("uuuu/MM/dd")))
+                .findFirst()
+                .orElse("*no date found");
+        log(str);
     }
 
     /**
@@ -40,6 +57,27 @@ public class Step14DateTest extends PlainTestCase {
      * (yellowのカラーボックスに入っているSetの中のスラッシュ区切り (e.g. 2019/04/24) の日付文字列をLocalDateに変換してtoString()したら？)
      */
     public void test_parseDate() {
+        String str = BOXES.stream()
+                .filter(colorBox -> colorBox.getColor().getColorName().equals("yellow"))
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof Set)
+                .map(obj -> (Set<Object>) obj)
+                .flatMap(Set::stream)
+                .filter(obj -> obj instanceof String)
+                .map(String.class::cast)
+                .map(s -> {
+                    try {
+                        return LocalDate.parse(s, DateTimeFormatter.ofPattern("uuuu/MM/dd"));
+                    } catch (DateTimeParseException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(LocalDate::toString)
+                .orElse("*no date found");
+        log(str);
     }
 
     /**
@@ -47,6 +85,10 @@ public class Step14DateTest extends PlainTestCase {
      * (カラーボックスに入っている日付の月を全て足したら？)
      */
     public void test_sumMonth() {
+        int total = extractLocalDateTimes()
+                .mapToInt(localDateTime -> localDateTime.getMonthValue())
+                .sum();
+        log(total);
     }
 
     /**
@@ -54,6 +96,13 @@ public class Step14DateTest extends PlainTestCase {
      * (カラーボックスに入っている二番目に見つかる日付に3日進めると何曜日？)
      */
     public void test_plusDays_weekOfDay() {
+        int day = extractLocalDateTimes()
+                .skip(1)
+                .map(LocalDateTime::getDayOfWeek)
+                .map(DayOfWeek::getValue)
+                .findFirst()
+                .orElse(-1);
+        log(day == -1 ? "*day of week not found" : day);
     }
 
     // ===================================================================================

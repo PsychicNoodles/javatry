@@ -131,7 +131,6 @@ public class Step06ObjectOrientedTest extends PlainTestCase {
         // [buy one-day passport]
         //
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
-        // #fixme you if step05 has been finished, you can use this code by jflute (2019/06/15)
         // _/_/_/_/_/_/_/_/_/_/
         TicketBuyResult result = booth.buyOneDayPassport(10000);
         Ticket ticket = result.getTicket();

@@ -90,20 +90,23 @@ public class Step13NumberTest extends PlainTestCase {
         return toDecimalType(o, false);
     }
 
+    static Stream<Object> extractValue(BoxSpace space) {
+        Object content = space.getContent();
+        if (content instanceof Map) {
+            return ((Map) content).values().stream();
+        } else if (content instanceof List) {
+            return ((List) content).stream();
+        } else {
+            return Stream.of(space);
+        }
+    }
+
+    static Stream<Object> extractValues(Stream<BoxSpace> spaces) {
+        return spaces.flatMap(Step13NumberTest::extractValue);
+    }
+
     static Stream<Object> extractValues() {
-        Stream<Object> rawVals = getBoxStream()
-                .map(BoxSpace::getContent);
-        Stream<Object> mapVals = getBoxStream()
-                .map(BoxSpace::getContent)
-                .filter(obj -> obj instanceof Map)
-                .map(Map.class::cast)
-                .flatMap(map -> map.values().stream());
-        Stream<Object> listVals = getBoxStream()
-                .map(BoxSpace::getContent)
-                .filter(obj -> obj instanceof List)
-                .map(List.class::cast)
-                .flatMap(List::stream);
-        return Stream.concat(Stream.concat(rawVals, mapVals), listVals);
+        return extractValues(getBoxStream());
     }
 
     static Stream<BigInteger> extractIntegers() {
@@ -145,7 +148,7 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中で、Integer型の Content を持っていてBoxSizeの幅が一番大きいカラーボックスの色は？)
      */
     public void test_findColorBigWidthHasInteger() {
-        String name = new YourPrivateRoom().getColorBoxList().stream()
+        String name = BOXES.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream().anyMatch(obj -> toIntegerType(obj.getContent()) != null))
                 .max(Comparator.comparingInt(boxSpace -> boxSpace.getSize().getWidth()))
                 .map(ColorBox::getColor)
@@ -198,5 +201,14 @@ public class Step13NumberTest extends PlainTestCase {
      * (purpleのカラーボックスに入ってる Map の中のvalueの数値・数字の合計は？)
      */
     public void test_sumMapNumberValue() {
+        int total = BOXES.stream()
+                .filter(colorBox -> colorBox.getColor().getColorName().equals("purple"))
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .flatMap(Step13NumberTest::extractValue)
+                .filter(o -> o instanceof Integer || o instanceof String)
+                .filter(o -> o instanceof String ? ((String) o).matches("[0-9]*") : true)
+                .mapToInt(o -> o instanceof Integer ? (Integer) o : Integer.valueOf((String) o))
+                .sum();
+        log(total);
     }
 }

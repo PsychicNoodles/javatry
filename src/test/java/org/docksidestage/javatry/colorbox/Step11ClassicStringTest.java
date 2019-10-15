@@ -73,6 +73,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String str = "";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
+                // TODO mattori space.toString()だと必ずしもString型じゃなくても当てはまってしまうので, instanceofを使って型をチェックしてあげよう by もってぃ
+                //              （ここだけじゃなくて他のところも直してあげて！）
                 if (space != null && space.toString().length() > str.length()) {
                     str = space.toString();
                 }

@@ -59,6 +59,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         String str = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
                 .map(Object::toString)
                 .collect(Collectors.maxBy(Comparator.comparing(String::length)))
                 .orElse("*no strings found");
@@ -73,11 +74,13 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         String min = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
                 .map(Object::toString)
                 .collect(Collectors.minBy(Comparator.comparing(String::length)))
                 .orElseThrow(() -> new IllegalStateException("*max not found"));
         String max = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
                 .map(Object::toString)
                 .collect(Collectors.maxBy(Comparator.comparing(String::length)))
                 .orElseThrow(() -> new IllegalStateException("*max not found"));
@@ -94,6 +97,7 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         int secondMax = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
                 .map(Object::toString)
                 .map(String::length)
                 .collect(Collector.of(() -> new IntPair(),
@@ -206,7 +210,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         String color = colorBoxList.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream()
-                        .filter(boxSpace -> boxSpace.toString().startsWith("Water"))
+                        .map(BoxSpace::getContent)
+                        .filter(object -> object.toString().startsWith("Water"))
                         .findFirst()
                         .isPresent())
                 .map(colorBox -> colorBox.getColor().toString())
@@ -223,7 +228,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         String color = colorBoxList.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream()
-                        .filter(boxSpace -> boxSpace.toString().endsWith("front"))
+                        .map(BoxSpace::getContent)
+                        .filter(object -> object.toString().endsWith("front"))
                         .findFirst()
                         .isPresent())
                 .map(colorBox -> colorBox.getColor().toString())
@@ -243,7 +249,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         int pos = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .map(BoxSpace::toString)
+                .map(BoxSpace::getContent)
+                .map(Object::toString)
                 .map(str -> str.indexOf("front"))
                 .filter(ind -> ind > -1)
                 .findFirst()
@@ -260,7 +267,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         int pos = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .map(BoxSpace::toString)
+                .map(BoxSpace::getContent)
+                .map(Object::toString)
                 .filter(str -> str.indexOf("ど") > -1 && str.lastIndexOf("ど") > -1 && str.indexOf("ど") != str.lastIndexOf("ど"))
                 .map(str -> str.lastIndexOf("ど"))
                 .findFirst()
@@ -280,7 +288,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         char c = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .map(BoxSpace::toString)
+                .map(BoxSpace::getContent)
+                .map(Object::toString)
                 .filter(str -> str.endsWith("front"))
                 .map(str -> str.charAt(0))
                 .findFirst()
@@ -297,7 +306,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         char c = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .map(BoxSpace::toString)
+                .map(BoxSpace::getContent)
+                .map(Object::toString)
                 .filter(str -> str.startsWith("Water"))
                 .map(str -> str.charAt(str.length() - 1))
                 .findFirst()
@@ -317,7 +327,8 @@ public class Step12StreamStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         int count = colorBoxList.stream()
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .map(BoxSpace::toString)
+                .map(BoxSpace::getContent)
+                .map(Object::toString)
                 .filter(str -> str.contains("o"))
                 .map(str -> str.replace("o", ""))
                 .map(str -> str.length())

@@ -66,21 +66,28 @@ public class Step13NumberTest extends PlainTestCase {
         return null;
     }
 
-    static BigDecimal toDecimalType(Object o) {
+    static BigDecimal toDecimalType(Object o, boolean strict) {
+        if (o instanceof BigDecimal) {
+            return (BigDecimal) o;
+        }
+        if (strict) {
+            return null;
+        }
         if (o instanceof Float) {
             return BigDecimal.valueOf((Float) o);
         }
         if (o instanceof Double) {
             return BigDecimal.valueOf((Double) o);
         }
-        if (o instanceof BigDecimal) {
-            return (BigDecimal) o;
-        }
         try {
             return new BigDecimal(toIntegerType(o));
         } catch (NullPointerException e) {
             return null;
         }
+    }
+
+    static BigDecimal toDecimalType(Object o) {
+        return toDecimalType(o, false);
     }
 
     static Stream<Object> extractValues() {
@@ -152,6 +159,15 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中に入ってる List の中の BigDecimal を全て足し合わせると？)
      */
     public void test_sumBigDecimalInList() {
+        BigDecimal total = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof List)
+                .map(obj -> (List<Object>) obj)
+                .flatMap(List::stream)
+                .filter(obj -> obj instanceof BigDecimal)
+                .map(BigDecimal.class::cast)
+                .reduce(new BigDecimal(0), BigDecimal::add);
+        log(total);
     }
 
     // ===================================================================================
@@ -162,6 +178,19 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスに入ってる、valueが数値のみの Map の中で一番大きいvalueのkeyは？)
      */
     public void test_findMaxMapNumberValue() {
+        Object key = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof Map)
+                .map(Map.class::cast)
+                .filter(map -> map.values().stream().allMatch(v -> v instanceof Integer))
+                .map(map -> (Map<Object, Integer>) map)
+                .map(Map::entrySet)
+                .map(entries -> entries.stream().max(Comparator.comparingInt(e -> e.getValue())).orElse(null))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElse("*no entry found");
+        log(key);
     }
 
     /**

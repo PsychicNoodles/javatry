@@ -15,13 +15,14 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.color.BoxColor;
@@ -40,87 +41,6 @@ public class Step13NumberTest extends PlainTestCase {
     // ===================================================================================
     //                                                                               Basic
     //                                                                               =====
-    static final List<ColorBox> BOXES = new YourPrivateRoom().getColorBoxList();
-
-    static Stream<BoxSpace> getBoxStream() {
-        return BOXES.stream().flatMap(colorBox -> colorBox.getSpaceList().stream());
-    }
-
-    static BigInteger toIntegerType(Object o) {
-        if (o instanceof BigDecimal) {
-            try {
-                return ((BigDecimal) o).toBigIntegerExact();
-            } catch (ArithmeticException e) {
-                return null;
-            }
-        }
-        if (o instanceof Long) {
-            return BigInteger.valueOf((Long) o);
-        }
-        if (o instanceof Integer) {
-            return BigInteger.valueOf((Integer) o);
-        }
-        if (o instanceof BigInteger) {
-            return (BigInteger) o;
-        }
-        return null;
-    }
-
-    static BigDecimal toDecimalType(Object o, boolean strict) {
-        if (o instanceof BigDecimal) {
-            return (BigDecimal) o;
-        }
-        if (strict) {
-            return null;
-        }
-        if (o instanceof Float) {
-            return BigDecimal.valueOf((Float) o);
-        }
-        if (o instanceof Double) {
-            return BigDecimal.valueOf((Double) o);
-        }
-        try {
-            return new BigDecimal(toIntegerType(o));
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-
-    static BigDecimal toDecimalType(Object o) {
-        return toDecimalType(o, false);
-    }
-
-    static Stream<Object> extractValue(BoxSpace space) {
-        Object content = space.getContent();
-        if (content instanceof Map) {
-            return ((Map) content).values().stream();
-        } else if (content instanceof List) {
-            return ((List) content).stream();
-        } else {
-            return Stream.of(space);
-        }
-    }
-
-    static Stream<Object> extractValues(Stream<BoxSpace> spaces) {
-        return spaces.flatMap(Step13NumberTest::extractValue);
-    }
-
-    static Stream<Object> extractValues() {
-        return extractValues(getBoxStream());
-    }
-
-    static Stream<BigInteger> extractIntegers() {
-        return extractValues()
-                .map(Step13NumberTest::toIntegerType)
-                .filter(Objects::nonNull);
-    }
-
-    static Stream<BigDecimal> extractDecimals() {
-        return extractValues()
-                .map(Step13NumberTest::toDecimalType)
-                .filter(Objects::nonNull);
-    }
-
     /**
      * How many integer-type values in color-boxes are between 0 and 54? <br>
      * (カラーボックの中に入っているInteger型で、0から54までの値は何個ある？)
@@ -204,7 +124,7 @@ public class Step13NumberTest extends PlainTestCase {
         int total = BOXES.stream()
                 .filter(colorBox -> colorBox.getColor().getColorName().equals("purple"))
                 .flatMap(colorBox -> colorBox.getSpaceList().stream())
-                .flatMap(Step13NumberTest::extractValue)
+                .flatMap(YourPrivateRoom::extractValue)
                 .filter(o -> o instanceof Integer || o instanceof String)
                 .filter(o -> o instanceof String ? ((String) o).matches("[0-9]*") : true)
                 .mapToInt(o -> o instanceof Integer ? (Integer) o : Integer.valueOf((String) o))

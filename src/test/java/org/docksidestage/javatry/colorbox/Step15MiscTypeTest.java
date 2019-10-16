@@ -15,6 +15,18 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.BOXES;
+import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.getBoxStream;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.docksidestage.bizfw.colorbox.impl.StandardColorBox;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.FavoriteProvider;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -33,6 +45,14 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っているthrowできるオブジェクトのクラス名は？)
      */
     public void test_throwable() {
+        String name = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof Throwable)
+                .map(Object::getClass)
+                .map(Class::getName)
+                .findFirst()
+                .get();
+        log(name);
     }
 
     /**
@@ -40,6 +60,15 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っている例外オブジェクトのネストした例外インスタンスのメッセージは？)
      */
     public void test_nestedException() {
+        String msg = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof Throwable)
+                .map(Throwable.class::cast)
+                .map(Throwable::getCause)
+                .map(Throwable::getMessage)
+                .findFirst()
+                .get();
+        log(msg);
     }
 
     // ===================================================================================
@@ -50,16 +79,46 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (カラーボックスに入っているFavoriteProviderインターフェースのjustHere()メソッドの戻り値は？)
      */
     public void test_interfaceCall() {
+        String here = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof FavoriteProvider)
+                .map(FavoriteProvider.class::cast)
+                .map(FavoriteProvider::justHere)
+                .findFirst()
+                .get();
+        log(here);
     }
 
     // ===================================================================================
     //                                                                            Optional
     //                                                                            ========
+    // https://stackoverflow.com/a/22726869
+    static <T> Stream<T> streamopt(Optional<T> opt) { return opt.map(Stream::of).orElse(Stream.empty()); }
+
     /**
      * What keyword is in BoxedStage of BoxedResort in List in beige color-box? (show "none" if no value) <br>
      * (beigeのカラーボックスに入っているListの中のBoxedResortのBoxedStageのkeywordは？(値がなければ固定の"none"という値を))
      */
     public void test_optionalMapping() {
+        String keyword = BOXES.stream()
+                .filter(colorBox -> colorBox.getColor().getColorName().equals("beige"))
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof List)
+                .map(obj -> (List<Object>) obj)
+                .flatMap(List::stream)
+                .filter(obj -> obj instanceof YourPrivateRoom.BoxedResort)
+                .peek(this::log)
+                .map(YourPrivateRoom.BoxedResort.class::cast)
+                .map(boxedResort -> boxedResort.getPark())
+                .flatMap(Step15MiscTypeTest::streamopt)
+                .map(YourPrivateRoom.BoxedPark::getStage)
+                .flatMap(Step15MiscTypeTest::streamopt)
+                .map(YourPrivateRoom.BoxedStage::getKeyword)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .get();
+        log(keyword);
     }
 
     // ===================================================================================
@@ -70,5 +129,8 @@ public class Step15MiscTypeTest extends PlainTestCase {
      * (getColorBoxList()メソッドの中のmakeEighthColorBox()メソッドを呼び出している箇所の行数は？)
      */
     public void test_lineNumber() {
+        Exception e = (Exception) ((StandardColorBox) BOXES.get(7)).getMiddleSpace().getContent();
+        int line = e.getStackTrace()[1].getLineNumber();
+        log(line);
     }
 }

@@ -15,6 +15,19 @@
  */
 package org.docksidestage.javatry.colorbox;
 
+import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.*;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.docksidestage.bizfw.colorbox.ColorBox;
+import org.docksidestage.bizfw.colorbox.color.BoxColor;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
+import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -33,6 +46,10 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックの中に入っているInteger型で、0から54までの値は何個ある？)
      */
     public void test_countZeroToFiftyFour_IntegerOnly() {
+        long count = extractIntegers()
+                .filter(i -> i.compareTo(BigInteger.valueOf(0)) > -1 && i.compareTo(BigInteger.valueOf(54)) < 1)
+                .count();
+        log(count);
     }
 
     /**
@@ -40,6 +57,10 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックの中に入っている数値で、0から54までの値は何個ある？)
      */
     public void test_countZeroToFiftyFour_Number() {
+        long count = extractDecimals()
+                .filter(i -> i.compareTo(BigDecimal.valueOf(0)) > -1 && i.compareTo(BigDecimal.valueOf(54)) < 1)
+                .count();
+        log(count);
     }
 
     /**
@@ -47,6 +68,13 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中で、Integer型の Content を持っていてBoxSizeの幅が一番大きいカラーボックスの色は？)
      */
     public void test_findColorBigWidthHasInteger() {
+        String name = BOXES.stream()
+                .filter(colorBox -> colorBox.getSpaceList().stream().anyMatch(obj -> toIntegerType(obj.getContent()) != null))
+                .max(Comparator.comparingInt(boxSpace -> boxSpace.getSize().getWidth()))
+                .map(ColorBox::getColor)
+                .map(BoxColor::getColorName)
+                .orElse("*no colors found");
+        log(name);
     }
 
     /**
@@ -54,6 +82,15 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスの中に入ってる List の中の BigDecimal を全て足し合わせると？)
      */
     public void test_sumBigDecimalInList() {
+        BigDecimal total = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof List)
+                .map(obj -> (List<Object>) obj)
+                .flatMap(List::stream)
+                .filter(obj -> obj instanceof BigDecimal)
+                .map(BigDecimal.class::cast)
+                .reduce(new BigDecimal(0), BigDecimal::add);
+        log(total);
     }
 
     // ===================================================================================
@@ -64,6 +101,19 @@ public class Step13NumberTest extends PlainTestCase {
      * (カラーボックスに入ってる、valueが数値のみの Map の中で一番大きいvalueのkeyは？)
      */
     public void test_findMaxMapNumberValue() {
+        Object key = getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof Map)
+                .map(Map.class::cast)
+                .filter(map -> map.values().stream().allMatch(v -> v instanceof Integer))
+                .map(map -> (Map<Object, Integer>) map)
+                .map(Map::entrySet)
+                .map(entries -> entries.stream().max(Comparator.comparingInt(e -> e.getValue())).orElse(null))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .map(Map.Entry::getKey)
+                .orElse("*no entry found");
+        log(key);
     }
 
     /**
@@ -71,5 +121,14 @@ public class Step13NumberTest extends PlainTestCase {
      * (purpleのカラーボックスに入ってる Map の中のvalueの数値・数字の合計は？)
      */
     public void test_sumMapNumberValue() {
+        int total = BOXES.stream()
+                .filter(colorBox -> colorBox.getColor().getColorName().equals("purple"))
+                .flatMap(colorBox -> colorBox.getSpaceList().stream())
+                .flatMap(YourPrivateRoom::extractValue)
+                .filter(o -> o instanceof Integer || o instanceof String)
+                .filter(o -> o instanceof String ? ((String) o).matches("[0-9]*") : true)
+                .mapToInt(o -> o instanceof Integer ? (Integer) o : Integer.valueOf((String) o))
+                .sum();
+        log(total);
     }
 }

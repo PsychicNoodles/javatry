@@ -73,12 +73,12 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String str = "";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null ) {
+                // done TODO mattori space.toString()だと必ずしもString型じゃなくても当てはまってしまうので, instanceofを使って型をチェックしてあげよう by もってぃ
+                //              （ここだけじゃなくて他のところも直してあげて！）
+                if (space != null) {
                     Object content = space.getContent();
-                    if (content instanceof String) {
-                        if (((String) content).length() > str.length()) {
-                            str = content.toString();
-                        }
+                    if (content instanceof String && content.toString().length() > str.length()) {
+                        str = content.toString();
                     }
                 }
             }
@@ -95,8 +95,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String min = null, max = null;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null) {
-                    String s = space.toString();
+                if (space != null && space.getContent() instanceof String) {
+                    String s = space.getContent().toString();
                     if (min == null) {
                         min = s;
                     } else {
@@ -126,8 +126,8 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String max = "", sec = "";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null) {
-                    String s = space.toString();
+                if (space != null && space.getContent() instanceof String) {
+                    String s = space.getContent().toString();
                     if (s.length() > max.length()) {
                         sec = max;
                         max = s;
@@ -148,7 +148,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
         int totalSum = 0;
         for (ColorBox box : colorBoxList) {
-            totalSum += box.toString().length();
+            for (BoxSpace space : box.getSpaceList()) {
+                if (space != null && space.getContent() instanceof String) {
+                    totalSum += space.getContent().toString().length();
+                }
+            }
         }
         log(totalSum);
     }
@@ -193,8 +197,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String color = "*no color with string starting with water";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null && space.toString().startsWith("Water")) {
-                    color = box.getColor().getColorName();
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String && content.toString().startsWith("Water")) {
+                        color = box.getColor().getColorName();
+                    }
                 }
             }
         }
@@ -210,8 +217,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String color = "*no color with string ending with front";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null && space.toString().endsWith("front")) {
-                    color = box.getColor().getColorName();
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String && content.toString().endsWith("front")) {
+                        color = box.getColor().getColorName();
+                    }
                 }
             }
         }
@@ -230,8 +240,11 @@ public class Step11ClassicStringTest extends PlainTestCase {
         int pos = -1;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null && space.toString().endsWith("front")) {
-                    pos = space.toString().indexOf("front");
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String && content.toString().endsWith("front")) {
+                        pos = content.toString().indexOf("front");
+                    }
                 }
             }
         }
@@ -247,11 +260,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
         int pos = 0;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                String s = space.toString();
-                int last = s.lastIndexOf("ど");
-                int first = s.indexOf("ど");
-                if (last > -1 && first > -1 && last != first) {
-                    pos = last;
+                if (space.getContent() instanceof String) {
+                    String s = space.getContent().toString();
+                    int last = s.lastIndexOf("ど");
+                    int first = s.indexOf("ど");
+                    if (last > -1 && first > -1 && last != first) {
+                        pos = last;
+                    }
                 }
             }
         }
@@ -271,8 +286,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
         Character c = null;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space.toString().endsWith("front")) {
-                    c = space.toString().charAt(0);
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String) {
+                        if (content.toString().endsWith("front")) {
+                            c = content.toString().charAt(0);
+                        }
+                    }
                 }
             }
         }
@@ -289,8 +309,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
         Character c = null;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space.toString().startsWith("Water")) {
-                    c = space.toString().charAt(space.toString().length() - 1);
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String) {
+                        if (content.toString().startsWith("Water")) {
+                            c = content.toString().charAt(content.toString().length() - 1);
+                        }
+                    }
                 }
             }
         }
@@ -310,9 +335,12 @@ public class Step11ClassicStringTest extends PlainTestCase {
         int count = -1;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space.toString().contains("o")) {
-                    count = space.toString().replace("o", "").length();
-                    break;
+                if (space != null) {
+                    Object content = space.getContent();
+                    if (content instanceof String && content.toString().contains("o")) {
+                        count = content.toString().replace("o", "").length();
+                        break;
+                    }
                 }
             }
         }
@@ -330,7 +358,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
                 if (space.getContent() instanceof File) {
-                    path = space.toString().replace("/", "\\");
+                    path = space.getContent().toString().replace("/", "\\");
                 }
             }
         }

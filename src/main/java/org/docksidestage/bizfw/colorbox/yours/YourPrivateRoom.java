@@ -21,14 +21,8 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.color.BoxColor;
@@ -36,6 +30,7 @@ import org.docksidestage.bizfw.colorbox.impl.CompactColorBox;
 import org.docksidestage.bizfw.colorbox.impl.DoorColorBox;
 import org.docksidestage.bizfw.colorbox.impl.StandardColorBox;
 import org.docksidestage.bizfw.colorbox.size.BoxSize;
+import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.bizfw.colorbox.space.DoorBoxSpace;
 
 /**
@@ -429,5 +424,93 @@ public class YourPrivateRoom {
         public String getKeyword() {
             return keyword;
         }
+    }
+
+    public static final List<ColorBox> BOXES = new YourPrivateRoom().getColorBoxList();
+
+    public static Stream<BoxSpace> getBoxStream() {
+        return BOXES.stream().flatMap(colorBox -> colorBox.getSpaceList().stream());
+    }
+
+    public static BigInteger toIntegerType(Object o) {
+        if (o instanceof BigDecimal) {
+            try {
+                return ((BigDecimal) o).toBigIntegerExact();
+            } catch (ArithmeticException e) {
+                return null;
+            }
+        }
+        if (o instanceof Long) {
+            return BigInteger.valueOf((Long) o);
+        }
+        if (o instanceof Integer) {
+            return BigInteger.valueOf((Integer) o);
+        }
+        if (o instanceof BigInteger) {
+            return (BigInteger) o;
+        }
+        return null;
+    }
+
+    public static BigDecimal toDecimalType(Object o, boolean strict) {
+        if (o instanceof BigDecimal) {
+            return (BigDecimal) o;
+        }
+        if (strict) {
+            return null;
+        }
+        if (o instanceof Float) {
+            return BigDecimal.valueOf((Float) o);
+        }
+        if (o instanceof Double) {
+            return BigDecimal.valueOf((Double) o);
+        }
+        try {
+            return new BigDecimal(toIntegerType(o));
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public static BigDecimal toDecimalType(Object o) {
+        return toDecimalType(o, false);
+    }
+
+    public static Stream<Object> extractValue(BoxSpace space) {
+        Object content = space.getContent();
+        if (content instanceof Map) {
+            return ((Map) content).values().stream();
+        } else if (content instanceof List) {
+            return ((List) content).stream();
+        } else {
+            return Stream.of(space);
+        }
+    }
+
+    public static Stream<Object> extractValues(Stream<BoxSpace> spaces) {
+        return spaces.flatMap(YourPrivateRoom::extractValue);
+    }
+
+    public static Stream<Object> extractValues() {
+        return extractValues(getBoxStream());
+    }
+
+    public static Stream<BigInteger> extractIntegers() {
+        return extractValues()
+                .map(YourPrivateRoom::toIntegerType)
+                .filter(Objects::nonNull);
+    }
+
+    public static Stream<BigDecimal> extractDecimals() {
+        return extractValues()
+                .map(YourPrivateRoom::toDecimalType)
+                .filter(Objects::nonNull);
+    }
+
+    public static Stream<LocalDateTime> extractLocalDateTimes() {
+        return getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(obj -> obj instanceof LocalDate || obj instanceof LocalDateTime)
+                .map(obj -> obj instanceof LocalDate ? LocalDateTime.of((LocalDate) obj, LocalTime.now()) : (LocalDateTime) obj);
     }
 }

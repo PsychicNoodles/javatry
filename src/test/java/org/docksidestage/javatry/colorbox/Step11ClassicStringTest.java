@@ -484,21 +484,54 @@ public class Step11ClassicStringTest extends PlainTestCase {
         }
     }
 
+    public void test_tom() {
+        log(convertStringToMap("map:{ x = y ; k = q ; a = map:{ b = map:{ t = f ; poop = brown ; tea = tasty } } ; z = map:{ c = d } }"));
+    }
+
     static Map<Object, Object> convertStringToMap(String str) {
-        return convertStringToMap(str.split("\\{ | = | ; |}"));
+        return convertStringToMap(str.split("\\{ | = | ; | }"));
     }
 
     static Map<Object, Object> convertStringToMap(String[] parts) {
-        return convertStringToMap(parts, 0);
+        return convertStringToMap(parts, 0).getMap();
     }
 
-    static Map<Object, Object> convertStringToMap(String[] parts, int start) {
+    private static class ConversionResult {
+        private Map<Object, Object> map;
+        private int endIndex;
+
+        public ConversionResult(Map<Object, Object> map, int endIndex) {
+            this.map = map;
+            this.endIndex = endIndex;
+        }
+
+        public Map<Object, Object> getMap() {
+            return map;
+        }
+
+        public void setMap(Map<Object, Object> map) {
+            this.map = map;
+        }
+
+        public int getEndIndex() {
+            return endIndex;
+        }
+
+        public void setEndIndex(int endIndex) {
+            this.endIndex = endIndex;
+        }
+    }
+
+    static ConversionResult convertStringToMap(String[] parts, int start) {
+//        System.out.println("converting " + Arrays.toString(parts));
         Map<Object, Object> map = new HashMap<>();
         boolean started = false;
+        boolean finished = false;
         Object key = null;
 
-        for (int i = start; i < parts.length; i++) {
+        for (int i = start; i < parts.length && !finished; i++) {
             Object item = null;
+//            System.out.println("on " + i + ": " + parts[i]);
             if (parts[i].equals("map:")) { // start of a map
 //                System.out.println("found map");
                 if (!started) {
@@ -506,21 +539,18 @@ public class Step11ClassicStringTest extends PlainTestCase {
                     started = true;
                 } else {
 //                    System.out.println("it's a sub-map");
-                    item = convertStringToMap(parts, i);
+                    ConversionResult result = convertStringToMap(parts, i);
+                    item = result.getMap();
 //                    System.out.println("sub-map: " + item);
-//                    System.out.println("moving i from " + i);
-                    for (int j = i; j < parts.length; j++) {
-//                        System.out.println("checking " + parts[j]);
-                        if (parts[j].equals("") || parts[j].equals(" ")) {
-                            i = j;
-                            break;
-                        }
+//                    System.out.println("moving i from " + i + " to " + result.getEndIndex());
+                    i = result.getEndIndex();
+                    if (result.getEndIndex() == -1) {
+                        finished = true;
                     }
-//                    System.out.println("moved i to " + i);
                 }
             } else if (parts[i].equals("") || parts[i].equals(" ")) { // end of a map
-//                System.out.println("end of map");
-                return map;
+//                System.out.println("end of map that started at " + start);
+                return new ConversionResult(map, i);
             } else {
                 item = parts[i];
 //                System.out.println("normal part " + item);
@@ -534,6 +564,6 @@ public class Step11ClassicStringTest extends PlainTestCase {
             }
         }
 
-        return map;
+        return new ConversionResult(map, -1);
     }
 }

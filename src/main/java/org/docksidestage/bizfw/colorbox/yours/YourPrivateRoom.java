@@ -513,4 +513,27 @@ public class YourPrivateRoom {
                 .filter(obj -> obj instanceof LocalDate || obj instanceof LocalDateTime)
                 .map(obj -> obj instanceof LocalDate ? LocalDateTime.of((LocalDate) obj, LocalTime.now()) : (LocalDateTime) obj);
     }
+
+    public static Object getDevilContent(Object content) {
+        if (content instanceof DevilBox) {
+            DevilBox db = (DevilBox) content;
+            db.wakeUp();
+            db.allowMe();
+            db.open();
+            try {
+                return db.getText();
+            } catch (DevilBoxTextNotFoundException e) {
+                return null;
+            }
+        } else {
+            return content;
+        }
+    }
+
+    // https://stackoverflow.com/a/4592016
+    public static int getNumberOfDecimalPlaces(BigDecimal bigDecimal) {
+        String string = bigDecimal.stripTrailingZeros().toPlainString();
+        int index = string.indexOf(".");
+        return index < 0 ? 0 : string.length() - index - 1;
+    }
 }

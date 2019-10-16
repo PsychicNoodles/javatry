@@ -73,8 +73,13 @@ public class Step11ClassicStringTest extends PlainTestCase {
         String str = "";
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
-                if (space != null && space.toString().length() > str.length()) {
-                    str = space.toString();
+                if (space != null ) {
+                    Object content = space.getContent();
+                    if (content instanceof String) {
+                        if (((String) content).length() > str.length()) {
+                            str = content.toString();
+                        }
+                    }
                 }
             }
         }
@@ -153,14 +158,27 @@ public class Step11ClassicStringTest extends PlainTestCase {
      * (カラーボックスの中で、色の名前が一番長いものは？)
      */
     public void test_length_findMaxColorSize() {
+        Set<String> result = new HashSet<>();
+        int maxLen = 0;
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        String name = "";
         for (ColorBox box : colorBoxList) {
-            if (box.getColor().getColorName().length() > name.length()) {
-                name = box.getColor().getColorName();
+            String colorName = box.getColor().getColorName();
+            int length = colorName.length();
+            if (result.size() == 0) {
+                result.add(colorName);
+                maxLen = length;
+                continue;
+            }
+            if (length == maxLen) {
+                result.add(colorName);
+            }
+            if (length > maxLen) {
+                result.clear();
+                result.add(colorName);
+                maxLen = length;
             }
         }
-        log(name);
+        log(result);
     }
 
     // ===================================================================================
@@ -363,6 +381,7 @@ public class Step11ClassicStringTest extends PlainTestCase {
             for (BoxSpace space : box.getSpaceList()) {
                 if (space.getContent() instanceof Map) {
                     Map<Object, Object> m = (Map) space.getContent();
+                    // TODO mattori 最後以外のMapが出力されてないよー　Contentの中身に、Mapは複数個入っているので、毎回loggingした方がいいと思うよ。by ちーかま
                     str = convertMapToString(m);
                 }
             }
@@ -389,7 +408,9 @@ public class Step11ClassicStringTest extends PlainTestCase {
                             break;
                         }
                     }
+                    // TODO isNestedがfalseの場合にも、loggingされるようにしよう by ちーかま
                     if (isNested) {
+                        // TODO mattori 上のと一緒で、最後以外のMapが出力されてないよー　全てのMapがloggingされるようにしよう。by ちーかま
                         str = convertMapToString(m);
                     }
                 }

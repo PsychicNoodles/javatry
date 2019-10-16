@@ -404,18 +404,15 @@ public class Step11ClassicStringTest extends PlainTestCase {
      */
     public void test_showMap_flat() {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        String str = null;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
                 if (space.getContent() instanceof Map) {
                     Map<Object, Object> m = (Map) space.getContent();
-                    // TODO mattori 最後以外のMapが出力されてないよー　Contentの中身に、Mapは複数個入っているので、毎回loggingした方がいいと思うよ。by ちーかま
-                    str = convertMapToString(m);
+                    // done TODO mattori 最後以外のMapが出力されてないよー　Contentの中身に、Mapは複数個入っているので、毎回loggingした方がいいと思うよ。by ちーかま
+                    log(convertMapToString(m));
                 }
             }
         }
-
-        log(str);
     }
 
     /**
@@ -424,28 +421,25 @@ public class Step11ClassicStringTest extends PlainTestCase {
      */
     public void test_showMap_nested() {
         List<ColorBox> colorBoxList = new YourPrivateRoom().getColorBoxList();
-        String str = null;
         for (ColorBox box : colorBoxList) {
             for (BoxSpace space : box.getSpaceList()) {
                 if (space.getContent() instanceof Map) {
                     Map<Object, Object> m = (Map) space.getContent();
-                    boolean isNested = false;
-                    for (Object o : m.values()) {
-                        if (o instanceof Map) {
-                            isNested = true;
-                            break;
-                        }
-                    }
-                    // TODO isNestedがfalseの場合にも、loggingされるようにしよう by ちーかま
-                    if (isNested) {
-                        // TODO mattori 上のと一緒で、最後以外のMapが出力されてないよー　全てのMapがloggingされるようにしよう。by ちーかま
-                        str = convertMapToString(m);
-                    }
+//                    boolean isNested = false;
+//                    for (Object o : m.values()) {
+//                        if (o instanceof Map) {
+//                            isNested = true;
+//                            break;
+//                        }
+//                    }
+                    // done TODO isNestedがfalseの場合にも、loggingされるようにしよう by ちーかま
+//                    if (isNested) {
+                        // done TODO mattori 上のと一緒で、最後以外のMapが出力されてないよー　全てのMapがloggingされるようにしよう。by ちーかま
+                        log(convertMapToString(m));
+//                    }
                 }
             }
         }
-
-        log(str);
     }
 
     static String convertMapToString(Set<Map.Entry<Object, Object>> entrySet) {

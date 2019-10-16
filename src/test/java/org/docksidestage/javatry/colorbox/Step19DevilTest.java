@@ -57,12 +57,11 @@ public class Step19DevilTest extends PlainTestCase {
                         .map(BoxSpace::getContent)
                         .map(YourPrivateRoom::getDevilContent)
                         .anyMatch(Objects::isNull))
-                .peek(this::log)
                 .map(colorBox -> colorBox.getColor().getColorName())
                 .map(s -> s.charAt(2))
                 .distinct()
                 .collect(Collectors.toList());
-        log("thirds " + thirds);
+//        log("thirds " + thirds);
 
         List<Integer> tens = BOXES.stream()
                 .filter(colorBox -> thirds.stream().anyMatch(c -> {
@@ -72,7 +71,7 @@ public class Step19DevilTest extends PlainTestCase {
                 .map(colorBox -> Integer.toString(colorBox.getSize().getDepth()))
                 .map(s -> Character.getNumericValue(s.charAt(s.length() - 2)))
                 .collect(Collectors.toList());
-        log("tens " + tens);
+//        log("tens " + tens);
 
         List<BigDecimal> seconds = BOXES.stream()
                 .filter(colorBox -> colorBox.getSpaceList().stream().map(BoxSpace::getContent).anyMatch(o -> o instanceof List))
@@ -84,9 +83,8 @@ public class Step19DevilTest extends PlainTestCase {
                             .map(YourPrivateRoom::toDecimalType)
                             .filter(Objects::nonNull)
                             .filter(bigDecimal -> YourPrivateRoom.getNumberOfDecimalPlaces(bigDecimal) > 2))
-                .peek(this::log)
                 .collect(Collectors.toList());
-        log("seconds " + seconds);
+//        log("seconds " + seconds);
 
         List<Object> boxes = BOXES.stream()
                 .filter(colorBox -> seconds.stream()

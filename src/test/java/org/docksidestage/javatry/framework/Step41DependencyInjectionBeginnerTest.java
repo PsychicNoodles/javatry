@@ -15,6 +15,7 @@
  */
 package org.docksidestage.javatry.framework;
 
+import org.docksidestage.bizfw.basic.objanimal.Cat;
 import org.docksidestage.bizfw.di.container.SimpleDiContainer;
 import org.docksidestage.bizfw.di.usingdi.UsingDiWebFrameworkProcess;
 import org.docksidestage.bizfw.di.usingdi.settings.UsingDiModule;
@@ -109,19 +110,21 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
         // execution code here
         UsingDiWebFrameworkProcess del = new UsingDiWebFrameworkProcess();
         SimpleDiContainer container = SimpleDiContainer.getInstance();
-        container.registerModule(new UsingDiModule());
+        container.registerModule(new UsingDiModule() {
+            @Override
+            protected Cat createPlayingCat() {
+                return new Cat() {
+                    @Override
+                    protected int getInitialHitPoint() {
+                        return 50;
+                    }
+                };
+            }
+        });
         container.resolveDependency();
         del.requestAccessorCallFriend();
-        del.requestAccessorGoToOffice();
-        // every CallFriend method uses the same set of animal singletons, so the Cat gets tired if it's not refreshed
-        container.registerModule(new UsingDiModule());
-        container.resolveDependency();
         del.requestAnnotationCallFriend();
-        del.requestAnnotationGoToOffice();
-        container.registerModule(new UsingDiModule());
-        container.resolveDependency();
         del.requestDelegatingCallFriend();
-        del.requestDelegatingGoToOffice();
     }
 
     /**

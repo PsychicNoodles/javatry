@@ -15,6 +15,9 @@
  */
 package org.docksidestage.javatry.framework;
 
+import org.docksidestage.bizfw.di.container.SimpleDiContainer;
+import org.docksidestage.bizfw.di.usingdi.UsingDiWebFrameworkProcess;
+import org.docksidestage.bizfw.di.usingdi.settings.UsingDiModule;
 import org.docksidestage.unit.PlainTestCase;
 
 /**
@@ -36,9 +39,9 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
         // _/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
         // What is Dependency Injection?
         // - - - - - (your answer?)
-        //
-        //
-        //
+        // Giving a class its instance variables/dependencies through its constructor, setter
+        // methods, or another mechanism rather than having those dependencies hard-coded within
+        // the class itself.
         // _/_/_/_/_/_/_/_/_/_/
     }
 
@@ -50,7 +53,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (NonDiDirectFirstAction と NonDiDirectSecondAction の違いは？)
      */
     public void test_nondi_difference_between_first_and_second() {
-        // your answer? => 
+        // your answer? => SecondAction repeats the setup, which is longer than in FirstAction
         // and your confirmation code here freely
     }
 
@@ -59,7 +62,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (NonDiDirectSecondAction と NonDiFactoryMethodAction の違いは？)
      */
     public void test_nondi_difference_between_second_and_FactoryMethod() {
-        // your answer? => 
+        // your answer? => FactoryMethodAction exports the setup code to another function
         // and your confirmation code here freely
     }
 
@@ -68,7 +71,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (NonDiFactoryMethodAction と NonDiIndividualFactoryAction の違いは？)
      */
     public void test_nondi_difference_between_FactoryMethod_and_IndividualFactory() {
-        // your answer? => 
+        // your answer? => IndividualFactoryAction exports the setup code function to a separate Factory class
         // and your confirmation code here freely
     }
 
@@ -80,7 +83,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (UsingDiAccessorAction と UsingDiAnnotationAction の違いは？)
      */
     public void test_usingdi_difference_between_Accessor_and_Annotation() {
-        // your answer? => 
+        // your answer? => AnnotationAction uses the @SimpleInject annotation to set its dependencies rather than setter methods
         // and your confirmation code here freely
     }
 
@@ -89,7 +92,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (UsingDiAnnotationAction と UsingDiDelegatingAction の違いは？)
      */
     public void test_usingdi_difference_between_Annotation_and_Delegating() {
-        // your answer? => 
+        // your answer? => DelegatingAction uses a delegate class to hold all its dependencies
         // and your confirmation code here freely
     }
 
@@ -102,6 +105,21 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      */
     public void test_usingdi_UsingDiWebFrameworkProcess() {
         // execution code here
+        UsingDiWebFrameworkProcess del = new UsingDiWebFrameworkProcess();
+        SimpleDiContainer container = SimpleDiContainer.getInstance();
+        container.registerModule(new UsingDiModule());
+        container.resolveDependency();
+        del.requestAccessorCallFriend();
+        del.requestAccessorGoToOffice();
+        // every CallFriend method uses the same set of animal singletons, so the Cat gets tired if it's not refreshed
+        container.registerModule(new UsingDiModule());
+        container.resolveDependency();
+        del.requestAnnotationCallFriend();
+        del.requestAnnotationGoToOffice();
+        container.registerModule(new UsingDiModule());
+        container.resolveDependency();
+        del.requestDelegatingCallFriend();
+        del.requestDelegatingGoToOffice();
     }
 
     /**

@@ -127,7 +127,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (UsingDiAnnotationAction のインスタンス変数 "animal" の実体クラスは？ (UsingDiWebFrameworkProcessで実行した時))
      */
     public void test_usingdi_whatis_animal() {
-        // your answer? => 
+        // your answer? => TooLazyDog (as according to UsingDiModule::doBindAnimal
         // and your confirmation code here freely
     }
 
@@ -139,7 +139,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * (DIコンテナとは？)
      */
     public void test_whatis_DIContainer() {
-        // your answer? => 
+        // your answer? => A container for registering classes to apply DI to and the values to inject
         // and your confirmation code here freely
     }
 

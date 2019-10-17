@@ -17,7 +17,10 @@ package org.docksidestage.javatry.colorbox;
 
 import static org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -28,6 +31,7 @@ import org.docksidestage.bizfw.colorbox.AbstractColorBox;
 import org.docksidestage.bizfw.colorbox.ColorBox;
 import org.docksidestage.bizfw.colorbox.impl.CompactColorBox;
 import org.docksidestage.bizfw.colorbox.impl.StandardColorBox;
+import org.docksidestage.bizfw.colorbox.size.BoxSize;
 import org.docksidestage.bizfw.colorbox.space.BoxSpace;
 import org.docksidestage.bizfw.colorbox.yours.YourPrivateRoom;
 import org.docksidestage.unit.PlainTestCase;
@@ -116,6 +120,16 @@ public class Step19DevilTest extends PlainTestCase {
      * ((このテストメソッドの中だけで無理やり)赤いカラーボックスの高さを160に変更して、BoxSizeをtoString()すると？)
      */
     public void test_looks_like_easy() {
+        ColorBox red = BOXES.stream().filter(colorBox -> colorBox.getColor().getColorName().equals("red")).findFirst().get();
+        try {
+            BoxSize sizeVal = red.getSize();
+            Field heightField = BoxSize.class.getDeclaredField("height");
+            heightField.setAccessible(true);
+            heightField.set(sizeVal, 160);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        log(red);
     }
 
     // ===================================================================================
@@ -126,5 +140,14 @@ public class Step19DevilTest extends PlainTestCase {
      * (カラーボックスに入っているFunctionalInterfaceアノテーションが付与されているインターフェースのFunctionalメソッドの戻り値は？)
      */
     public void test_be_frameworker() {
+        log(getBoxStream()
+                .map(BoxSpace::getContent)
+                .filter(Objects::nonNull)
+                .peek(o -> log(o.getClass()))
+                .filter(o -> o instanceof FavoriteProvider)
+                .map(FavoriteProvider.class::cast)
+                .map(FavoriteProvider::justHere)
+                .findFirst()
+                .get());
     }
 }

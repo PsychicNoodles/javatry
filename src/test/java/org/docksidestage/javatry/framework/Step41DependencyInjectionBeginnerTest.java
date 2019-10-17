@@ -158,7 +158,7 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * https://github.com/lastaflute/lastaflute-example-harbor
      */
     public void test_zone_search_component_on_LastaDi() {
-        // your answer? => 
+        // your answer? => AbstractBehaviorWritable, which is a superclass of MemberBhv
     }
 
     /**
@@ -168,6 +168,6 @@ public class Step41DependencyInjectionBeginnerTest extends PlainTestCase {
      * https://github.com/dbflute-example/dbflute-example-on-springboot
      */
     public void test_zone_search_component_on_Spring() {
-        // your answer? => 
+        // your answer? => @org.springframework.stereotype.Component("memberBhv") annotation
     }
 }
